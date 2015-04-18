@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xmlns:tx="http://www.springframework.org/schema/tx"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+ 
+
+    <annotation-driven />
+        
+    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/orbitauth"/>
+        <beans:property name="username" value="root"/>
+        <beans:property name="password" value="sw2000"/>
+    </beans:bean>
+    
+   <!-- Definition for authenticationJDBCTemplate bean -->
+   <beans:bean id="orbitAuthJDBCTemplate" 
+      class="main.java.com.celantinteractive.authentication.OrbitAuthTemplate">
+      <beans:property name="dataSource"  ref="dataSource" />    
+   </beans:bean>
+        
+    <!-- Configure to plugin JSON as request and response in method handler -->
+    <beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <beans:property name="messageConverters">
+            <beans:list>
+                <beans:ref bean="jsonMessageConverter" />
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <!-- Configure bean to convert JSON to POJO and vice versa -->
+    <beans:bean id="jsonMessageConverter"
+                    class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    </beans:bean>
+    <context:component-scan base-package="main.java.com.celantinteractive.authentication" />
+</beans:beans>
