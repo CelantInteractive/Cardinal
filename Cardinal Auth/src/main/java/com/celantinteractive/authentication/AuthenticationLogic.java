@@ -4,7 +4,6 @@
 package main.java.com.celantinteractive.authentication;
 
 import main.java.com.celantinteractive.frames.RefreshRequest;
-import main.java.com.celantinteractive.frames.ResponseLogin;
 import main.java.com.celantinteractive.frames.ResponseRefresh;
 import main.java.com.celantinteractive.frames.LoginRequest;
 import java.util.UUID;
@@ -15,36 +14,31 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @SuppressWarnings("unused")
 public class AuthenticationLogic {
 
-    IOrbitAuthDAO authTemplate = null;
+    ICardinalAuthDAO authTemplate = null;
 
-    public AuthenticationLogic(IOrbitAuthDAO auth) {
+    public AuthenticationLogic(ICardinalAuthDAO auth) {
         authTemplate = auth;
     }
 
-    public ResponseLogin processLogin(LoginRequest loginRequest) {
+    public ResponseLogin processLogin(String email, String password, String clientToken) {
 
         ResponseLogin response = new ResponseLogin();
 
-        String userUUID = authTemplate.getUUIDFromUsername(loginRequest
-                .getUsername());
-
-        String userPassword = authTemplate.getPasswordFromUUID(userUUID);
+        String userPassword = authTemplate.getPasswordFromEmail(email);
 
         if (userPassword != null) {
             String userAccessToken = UUID.randomUUID().toString();
             String userClientToken = UUID.randomUUID().toString();
 
-            if (!loginRequest.getClientToken().isEmpty()) {
-                userClientToken = loginRequest.getClientToken();
+            if (!clientToken.isEmpty()) {
+                userClientToken = clientToken;
             }
 
-            if (BCrypt.checkpw(loginRequest.getPassword(), userPassword)) {
-                authTemplate.createSession(userUUID, userAccessToken, userClientToken);
+            if (BCrypt.checkpw(password, userPassword)) {
+                authTemplate.createSession(email, userAccessToken, userClientToken);
                 response.setStatusCode(StatusCode.OK);
                 response.setAccessToken(userAccessToken);
                 response.setClientToken(userClientToken);
-                response.setUsername(loginRequest.getUsername());
-                response.setUUID(userUUID);
             } else {
                 response.setStatusCode(StatusCode.INVALID_CREDENTIALS);
             }

@@ -1,14 +1,13 @@
-package main.java.com.celantinteractive.frames;
+package main.java.com.celantinteractive.authentication;
 
 import java.io.Serializable;
+import main.java.com.celantinteractive.frames.ResponseFrame;
 
 public class ResponseLogin extends ResponseFrame implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6004769023625219821L;
-	private String UUID;
-	private String username;
 	private String accessToken;
 	private String clientToken;
 	
@@ -27,21 +26,5 @@ public class ResponseLogin extends ResponseFrame implements Serializable {
 	}
 	public void setClientToken(String clientToken) {
 		this.clientToken = clientToken;
-	}
-
-	public String getUUID() {
-		return UUID;
-	}
-
-	public void setUUID(String uUID) {
-		UUID = uUID;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 }

@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.celantinteractive</groupId>
-    <artifactId>Authentication</artifactId>
+    <artifactId>CardinalAuth</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Authentication Maven Webapp</name>
+    <name>Cardinal Auth</name>
     <url>http://maven.apache.org</url>
     <properties>
         <java-version>1.6</java-version>

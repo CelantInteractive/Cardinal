@@ -1,32 +1,23 @@
 package main.java.com.celantinteractive.authentication;
 
-public interface IOrbitAuthDAO {
+public interface ICardinalAuthDAO {
 
     /**
-     * Given the users UUID get their hashed password.
+     * Given the users email get their hashed password.
      *
-     * @param UUID The UUID of the user
+     * @param email The email address of the user
      * @return Hashed password for the user
      */
-    public String getPasswordFromUUID(String UUID);
+    public String getPasswordFromEmail(String email);
 
     /**
-     * Given the users Username get their UUID
+     * Given the email, accessToken, and clientToken create a new session
      *
-     * @param username The username of the user
-     * @return Thumbnail information, or null if the thumbnail could not be
-     * found.
-     */
-    public String getUUIDFromUsername(String username);
-
-    /**
-     * Given the UUID, accessToken, and clientToken create a new session
-     *
-     * @param UUID The UUID of the user
+     * @param email The email of the user
      * @param accessToken The client's unique accessToken
      * @param clientToken The clientToken of the users client
      */
-    public void createSession(String UUID,String accessToken, String clientToken);
+    public void createSession(String email,String accessToken, String clientToken);
     
     /**
      * Given the newAccesstoken, oldAccessToken, and clientToken refresh the active session
@@ -37,12 +28,18 @@ public interface IOrbitAuthDAO {
      */
     public void refreshSession(String newAccesstoken, String oldAccessToken, String clientToken);
     
+    
+    /**
+     * 
+     * @param accessToken
+     * @return true if the sessionId is the most recent, false otherwise
+     */
     public Boolean sessionIsValid(String accessToken);
     
     /**
      * Logs an error into the database
      * 
-     * @param errorCode The error code thrown
+     * @param e The Exception thrown
      * @param timeDate The time and date of the error
      */
     public void logError(Exception e, Long timeDate);

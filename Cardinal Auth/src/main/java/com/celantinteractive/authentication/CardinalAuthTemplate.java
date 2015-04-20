@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 /**
  * Lesson Database template
  */
-public class OrbitAuthTemplate implements IOrbitAuthDAO {
+public class CardinalAuthTemplate implements ICardinalAuthDAO {
 
     DataSource dataSource;
 
@@ -23,7 +23,7 @@ public class OrbitAuthTemplate implements IOrbitAuthDAO {
     }
 
     @Override
-    public String getPasswordFromUUID(String UUID) {
+    public String getPasswordFromEmail(String email) {
 
         Connection conn = null;
         String ret = null;
@@ -33,7 +33,7 @@ public class OrbitAuthTemplate implements IOrbitAuthDAO {
             conn = (Connection) dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement("call getPasswordFromUUID(?)");
 
-            stmt.setString(1, UUID);
+            stmt.setString(1, email);
 
             ResultSet results = stmt.executeQuery();
 
@@ -56,40 +56,7 @@ public class OrbitAuthTemplate implements IOrbitAuthDAO {
     }
 
     @Override
-    public String getUUIDFromUsername(String username) {
-
-        Connection conn = null;
-        String ret = null;
-
-        try {
-
-            conn = (Connection) dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("call getUUIDFromUsername(?)");
-
-            stmt.setString(1, username);
-
-            ResultSet results = stmt.executeQuery();
-
-            if (results.first()) {
-                ret = results.getString(1);
-            }
-        } catch (Exception ex) {
-            logError(ex, System.currentTimeMillis());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
-                    logError(ex, System.currentTimeMillis());
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    @Override
-    public void createSession(String UUID, String accessToken, String clientToken) {
+    public void createSession(String email, String accessToken, String clientToken) {
         Connection conn = null;
 
         try {
@@ -97,7 +64,7 @@ public class OrbitAuthTemplate implements IOrbitAuthDAO {
             conn = (Connection) dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement("call createSession(?,?,?)");
 
-            stmt.setString(1, UUID);
+            stmt.setString(1, email);
             stmt.setString(2, clientToken);
             stmt.setString(3, accessToken);
 
@@ -169,13 +136,13 @@ public class OrbitAuthTemplate implements IOrbitAuthDAO {
             stmt.executeQuery();
 
         } catch (Exception ex) {
-            Logger.getLogger(OrbitAuthTemplate.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CardinalAuthTemplate.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (conn != null) {
                 try {
                     conn.close();
                 } catch (Exception ex) {
-                    Logger.getLogger(OrbitAuthTemplate.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CardinalAuthTemplate.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
