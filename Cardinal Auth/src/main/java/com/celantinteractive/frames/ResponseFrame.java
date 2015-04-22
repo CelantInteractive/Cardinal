@@ -8,7 +8,7 @@ public class ResponseFrame implements Serializable {
         OK,
         GENERAL_FAILURE,
         INVALID_CREDENTIALS,
-        UNKNOWN_ACCESS_TOKEN;
+        STALE_SESSION;
     }
 
     /**

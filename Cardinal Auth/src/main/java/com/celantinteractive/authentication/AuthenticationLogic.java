@@ -3,9 +3,9 @@
  */
 package main.java.com.celantinteractive.authentication;
 
+import main.java.com.celantinteractive.frames.ResponseLogin;
 import main.java.com.celantinteractive.frames.RefreshRequest;
 import main.java.com.celantinteractive.frames.ResponseRefresh;
-import main.java.com.celantinteractive.frames.LoginRequest;
 import java.util.UUID;
 import main.java.com.celantinteractive.frames.ResponseFrame.StatusCode;
 
@@ -31,7 +31,9 @@ public class AuthenticationLogic {
             String userClientToken = UUID.randomUUID().toString();
 
             if (!clientToken.isEmpty()) {
-                userClientToken = clientToken;
+                if(authTemplate.isValidClientToken(clientToken)) {
+                    userClientToken = clientToken;
+                }
             }
 
             if (BCrypt.checkpw(password, userPassword)) {
@@ -49,19 +51,19 @@ public class AuthenticationLogic {
         return response;
     }
 
-    public ResponseRefresh processRefresh(RefreshRequest refreshRequest) {
+    public ResponseRefresh processRefresh(String clientToken, String accessToken) {
 
         ResponseRefresh response = new ResponseRefresh();
 
         String userAccessToken = UUID.randomUUID().toString();
 
-        if (authTemplate.sessionIsValid(refreshRequest.getAccessToken())) {
-            authTemplate.refreshSession(userAccessToken, refreshRequest.getAccessToken(), refreshRequest.getClientToken());
+        if (authTemplate.sessionIsRecent(clientToken, accessToken)) {
+            authTemplate.refreshSession(userAccessToken, accessToken, clientToken);
             response.setAccessToken(userAccessToken);
-            response.setClientToken(refreshRequest.getClientToken());
+            response.setClientToken(clientToken);
             response.setStatusCode(StatusCode.OK);
         } else {
-            response.setStatusCode(StatusCode.UNKNOWN_ACCESS_TOKEN);
+            response.setStatusCode(StatusCode.STALE_SESSION);
         }
 
         return response;

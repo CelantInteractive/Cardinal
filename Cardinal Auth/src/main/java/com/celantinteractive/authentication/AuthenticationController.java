@@ -3,6 +3,7 @@
  */
 package main.java.com.celantinteractive.authentication;
 
+import main.java.com.celantinteractive.frames.ResponseLogin;
 import main.java.com.celantinteractive.frames.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,6 @@ public class AuthenticationController {
     ICardinalAuthDAO authTemplate;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
-    @ResponseBody
     public ResponseLogin login(
             @RequestParam(value = "email") String email,
             @RequestParam(value = "password") String password,
@@ -32,13 +32,15 @@ public class AuthenticationController {
         return response;
     }
 
-    @RequestMapping(value = "/refresh", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
     @ResponseBody
-    public ResponseRefresh refresh(@RequestBody RefreshRequest refreshRequest) {
+    public ResponseRefresh refresh(
+            @RequestParam(value = "accessToken") String accessToken,
+            @RequestParam(value = "clientToken") String clientToken) {
 
         AuthenticationLogic logic = new AuthenticationLogic(authTemplate);
 
-        ResponseRefresh response = logic.processRefresh(refreshRequest);
+        ResponseRefresh response = logic.processRefresh(clientToken, accessToken);
 
         return response;
     }

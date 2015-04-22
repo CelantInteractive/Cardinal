@@ -62,10 +62,46 @@ DROP procedure IF EXISTS `getPasswordFromEmail`$$
 USE `cardinal`$$
 CREATE PROCEDURE `getPasswordFromEmail` (IN p_email VARCHAR(100))
 BEGIN
-
-SELECT `Password` FROM `cardinal`.`accounts` WHERE `Email`=p_email;
-
+	SELECT `Password` FROM `cardinal`.`accounts` WHERE `Email`=p_email;
 END$$
+
+DROP procedure IF EXISTS `createSession`$$
+USE `cardinal`$$
+CREATE PROCEDURE `createSession`(IN p_email VARCHAR(100), IN p_client_token VARCHAR(36), IN p_access_token VARCHAR(36))
+BEGIN
+	DECLARE p_userId int;
+    
+    SELECT id INTO p_userId FROM accounts WHERE email=p_email;
+
+	DELETE FROM accountsessions WHERE UserId=p_userId;
+    INSERT INTO accountsessions (UserId, ClientToken, AccessToken) VALUES (p_userId, p_client_token, p_access_token);
+END$$
+
+DROP procedure IF EXISTS `sessionIsRecent`$$
+USE `cardinal`$$
+CREATE PROCEDURE `sessionIsRecent` (IN p_client_token VARCHAR(36), IN p_access_token VARCHAR(36))
+BEGIN
+	DECLARE recent BOOLEAN DEFAULT 0;
+	SELECT COUNT(*) INTO recent FROM accountsessions WHERE ClientToken=p_client_token AND AccessToken=p_access_token;
+    SELECT recent;
+END$$
+
+DROP procedure IF EXISTS `refreshSession`$$
+USE `cardinal`$$
+CREATE PROCEDURE `refreshSession`(IN `p_new_access_token` VARCHAR(50), IN `p_access_token` VARCHAR(50), IN `p_client_token` VARCHAR(50))
+BEGIN
+	UPDATE accountsessions SET AccessToken=p_new_access_token WHERE AccessToken=p_access_token AND ClientToken=p_client_token;
+END$$
+
+DROP procedure IF EXISTS `isValidClientToken`$$
+USE `cardinal`$$
+CREATE PROCEDURE `isValidClientToken` (IN p_client_token VARCHAR(36))
+BEGIN
+	DECLARE isValid BOOLEAN DEFAULT 0;
+	SELECT COUNT(*) INTO isValid FROM accountsessions WHERE ClientToken=p_client_token;
+    SELECT isValid;
+END$$
+
 
 
 

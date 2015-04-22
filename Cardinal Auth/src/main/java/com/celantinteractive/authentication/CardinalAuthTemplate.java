@@ -31,7 +31,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
         try {
 
             conn = (Connection) dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("call getPasswordFromUUID(?)");
+            PreparedStatement stmt = conn.prepareStatement("call getPasswordFromEmail(?)");
 
             stmt.setString(1, email);
 
@@ -113,10 +113,83 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
     }
 
     @Override
+    public Boolean sessionIsRecent(String clientToken, String accessToken) {
+
+        Connection conn = null;
+        Boolean ret = false;
+
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call sessionIsRecent(?,?)");
+
+            stmt.setString(1, clientToken);
+            stmt.setString(2, accessToken);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.first()) {
+                if (results.getBoolean("recent")) {
+                    ret = true;
+                }
+            }
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    @Override
+    public Boolean isValidClientToken(String clientToken) {
+
+        Connection conn = null;
+        Boolean ret = false;
+
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call isValidClientToken(?)");
+
+            stmt.setString(1, clientToken);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.first()) {
+                if (results.getBoolean("isValid")) {
+                    ret = true;
+                }
+            }
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    @Override
     public void logError(Exception e, Long timeDate) {
 
         Connection conn = null;
         String errorMessage = "";
+
+        Logger.getLogger(CardinalAuthTemplate.class.getName()).log(Level.SEVERE, null, e);
 
         try {
 
@@ -146,40 +219,5 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
                 }
             }
         }
-    }
-
-    @Override
-    public Boolean sessionIsValid(String accessToken) {
-
-        Connection conn = null;
-        Boolean ret = false;
-
-        try {
-
-            conn = (Connection) dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("call sessionIsValid(?)");
-
-            stmt.setString(1, accessToken);
-
-            ResultSet results = stmt.executeQuery();
-
-            if (results.first()) {
-                if (results.getString(1).equals("1")) {
-                    ret = true;
-                }
-            }
-        } catch (Exception ex) {
-            logError(ex, System.currentTimeMillis());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception ex) {
-                    logError(ex, System.currentTimeMillis());
-                }
-            }
-        }
-
-        return ret;
     }
 }

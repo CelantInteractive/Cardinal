@@ -31,10 +31,18 @@ public interface ICardinalAuthDAO {
     
     /**
      * 
+     * @param clientToken
      * @param accessToken
      * @return true if the sessionId is the most recent, false otherwise
      */
-    public Boolean sessionIsValid(String accessToken);
+    public Boolean sessionIsRecent(String clientToken, String accessToken);
+    
+    /**
+     * 
+     * @param clientToken The client token to check
+     * @return True if is valid client token, false otherwise
+     */
+    public Boolean isValidClientToken(String clientToken);
     
     /**
      * Logs an error into the database
