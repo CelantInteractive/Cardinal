@@ -1,4 +1,4 @@
-package main.java.com.celantinteractive.frames;
+package main.java.com.celantinteractive.common;
 
 import java.io.Serializable;
 
@@ -18,6 +18,10 @@ public class ResponseFrame implements Serializable {
     private StatusCode statusCode;
     private String uniqueSupport;
 
+    public ResponseFrame() {
+        this(StatusCode.GENERAL_FAILURE, "");
+    }
+    
     public ResponseFrame(StatusCode statusCode, String uniqueSupport) {
         this.statusCode = statusCode;
         this.uniqueSupport = uniqueSupport;

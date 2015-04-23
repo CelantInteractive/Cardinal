@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015 Celant Interactive Ltd. All rights reserved
  */
-package main.java.com.celantinteractive.frames;
+package main.java.com.celantinteractive.response;
 
 import java.io.Serializable;
 

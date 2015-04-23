@@ -3,11 +3,12 @@
  */
 package main.java.com.celantinteractive.authentication;
 
-import main.java.com.celantinteractive.frames.ResponseLogin;
-import main.java.com.celantinteractive.frames.RefreshRequest;
-import main.java.com.celantinteractive.frames.ResponseRefresh;
+import main.java.com.celantinteractive.response.ResponseLogin;
+import main.java.com.celantinteractive.response.RefreshRequest;
+import main.java.com.celantinteractive.response.ResponseRefresh;
 import java.util.UUID;
-import main.java.com.celantinteractive.frames.ResponseFrame.StatusCode;
+import main.java.com.celantinteractive.common.ResponseFrame;
+import main.java.com.celantinteractive.common.ResponseFrame.StatusCode;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -31,7 +32,7 @@ public class AuthenticationLogic {
             String userClientToken = UUID.randomUUID().toString();
 
             if (!clientToken.isEmpty()) {
-                if(authTemplate.isValidClientToken(clientToken)) {
+                if (clientToken.matches("[a-z\\d]{8}-[a-z\\d]{4}-[a-z\\d]{4}-[a-z\\d]{4}-[a-z\\d]{12}")) {
                     userClientToken = clientToken;
                 }
             }
@@ -51,19 +52,66 @@ public class AuthenticationLogic {
         return response;
     }
 
-    public ResponseRefresh processRefresh(String clientToken, String accessToken) {
+    public ResponseRefresh processRefresh(String accessToken, String clientToken) {
 
         ResponseRefresh response = new ResponseRefresh();
 
         String userAccessToken = UUID.randomUUID().toString();
 
-        if (authTemplate.sessionIsRecent(clientToken, accessToken)) {
+        if (authTemplate.authenticateSession(accessToken, clientToken)) {
             authTemplate.refreshSession(userAccessToken, accessToken, clientToken);
             response.setAccessToken(userAccessToken);
             response.setClientToken(clientToken);
             response.setStatusCode(StatusCode.OK);
         } else {
             response.setStatusCode(StatusCode.STALE_SESSION);
+        }
+
+        return response;
+    }
+
+    public ResponseFrame processValidate(String accessToken) {
+
+        ResponseFrame response = new ResponseFrame();
+
+        if (authTemplate.sessionIsRecent(accessToken)) {
+            response.setStatusCode(StatusCode.OK);
+        } else {
+            response.setStatusCode(StatusCode.STALE_SESSION);
+        }
+
+        return response;
+    }
+
+    public ResponseFrame processLogout(String email, String password) {
+
+        ResponseFrame response = new ResponseFrame();
+
+        String userPassword = authTemplate.getPasswordFromEmail(email);
+
+        if (userPassword != null) {
+            if (BCrypt.checkpw(password, userPassword)) {
+                authTemplate.invalidateSessionByEmail(email);
+                response.setStatusCode(StatusCode.OK);
+            } else {
+                response.setStatusCode(StatusCode.INVALID_CREDENTIALS);
+            }
+        } else {
+            response.setStatusCode(StatusCode.INVALID_CREDENTIALS);
+        }
+
+        return response;
+    }
+
+    public ResponseFrame processInvalidate(String accessToken, String clientToken) {
+
+        ResponseFrame response = new ResponseFrame();
+
+        if (authTemplate.authenticateSession(accessToken, clientToken)) {
+            authTemplate.invalidateSessionByPair(accessToken, clientToken);
+            response.setStatusCode(StatusCode.OK);
+        } else {
+            response.setStatusCode(StatusCode.INVALID_CREDENTIALS);
         }
 
         return response;

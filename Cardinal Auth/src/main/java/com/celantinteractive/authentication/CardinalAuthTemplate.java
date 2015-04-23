@@ -26,7 +26,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
     public String getPasswordFromEmail(String email) {
 
         Connection conn = null;
-        String ret = null;
+        String ret = "";
 
         try {
 
@@ -95,10 +95,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
             stmt.setString(2, oldAccessToken);
             stmt.setString(3, clientToken);
 
-            ResultSet result = stmt.executeQuery();
-
-            String string = result.getString(1);
-
+            stmt.executeQuery();            
         } catch (Exception ex) {
             logError(ex, System.currentTimeMillis());
         } finally {
@@ -113,7 +110,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
     }
 
     @Override
-    public Boolean sessionIsRecent(String clientToken, String accessToken) {
+    public Boolean authenticateSession(String clientToken, String accessToken) {
 
         Connection conn = null;
         Boolean ret = false;
@@ -121,9 +118,44 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
         try {
 
             conn = (Connection) dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("call sessionIsRecent(?,?)");
+            PreparedStatement stmt = conn.prepareStatement("call authenticateSession(?,?)");
 
             stmt.setString(1, clientToken);
+            stmt.setString(2, accessToken);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.first()) {
+                if (results.getBoolean("recent")) {
+                    ret = true;
+                }
+            }
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
+
+        return ret;
+    }
+    
+    @Override
+    public Boolean sessionIsRecent(String accessToken) {
+
+        Connection conn = null;
+        Boolean ret = false;
+
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call sessionIsRecent(?)");
+            
             stmt.setString(2, accessToken);
 
             ResultSet results = stmt.executeQuery();
@@ -181,6 +213,59 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
         }
 
         return ret;
+    }
+    
+    @Override
+    public void invalidateSessionByEmail(String email) {
+
+        Connection conn = null;
+        
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call invalidateSessionByEmail(?)");
+
+            stmt.setString(1, email);
+
+            stmt.executeQuery();
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void invalidateSessionByPair(String accessToken, String clientToken) {
+
+        Connection conn = null;
+
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call invalidateSessionByPair(?,?)");
+
+            stmt.setString(1, accessToken);
+            stmt.setString(2, clientToken);
+
+            stmt.executeQuery();
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
     }
 
     @Override

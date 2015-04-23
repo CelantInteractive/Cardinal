@@ -3,8 +3,11 @@
  */
 package main.java.com.celantinteractive.authentication;
 
-import main.java.com.celantinteractive.frames.ResponseLogin;
-import main.java.com.celantinteractive.frames.*;
+import main.java.com.celantinteractive.response.ResponseRefresh;
+import main.java.com.celantinteractive.response.LogoutRequest;
+import main.java.com.celantinteractive.common.ResponseFrame;
+import main.java.com.celantinteractive.common.APIEndpoints;
+import main.java.com.celantinteractive.response.ResponseLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +22,7 @@ public class AuthenticationController {
     @Autowired
     ICardinalAuthDAO authTemplate;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
+    @RequestMapping(value = APIEndpoints.LOGIN, method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
     public ResponseLogin login(
             @RequestParam(value = "email") String email,
             @RequestParam(value = "password") String password,
@@ -32,38 +35,50 @@ public class AuthenticationController {
         return response;
     }
 
-    @RequestMapping(value = "/refresh", method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
-    @ResponseBody
+    @RequestMapping(value = APIEndpoints.REFRESH, method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
     public ResponseRefresh refresh(
             @RequestParam(value = "accessToken") String accessToken,
             @RequestParam(value = "clientToken") String clientToken) {
 
         AuthenticationLogic logic = new AuthenticationLogic(authTemplate);
 
-        ResponseRefresh response = logic.processRefresh(clientToken, accessToken);
+        ResponseRefresh response = logic.processRefresh(accessToken, clientToken);
 
         return response;
     }
+    
+    @RequestMapping(value = APIEndpoints.VALIDATE, method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
+    public ResponseFrame validate(
+            @RequestParam(value = "accessToken") String accessToken) {
+        
+        AuthenticationLogic logic = new AuthenticationLogic(authTemplate);
+        
+        ResponseFrame response = logic.processValidate(accessToken);
+        
+        return response;
+    }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
-    public ResponseFrame logout(@RequestBody LogoutRequest logoutRequest) {
+    @RequestMapping(value = APIEndpoints.LOGOUT, method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
+    public ResponseFrame logout(
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "password") String password) {
+        
         AuthenticationLogic logic = new AuthenticationLogic(authTemplate);
 
-        ResponseFrame response = logic.processLogin("","","");
+        ResponseFrame response = logic.processLogout(email, password);
 
         return response;
     }
 
-    /*
-    @RequestMapping(value = "/invalidate", method = RequestMethod.POST, consumes = "application/json")
-    @ResponseBody
-    public ResponseInvalidate logout(@RequestBody InvalidateRequest logoutRequest) {
+    @RequestMapping(value = APIEndpoints.INVALIDATE, method = RequestMethod.POST, consumes = "*/*", produces = "application/json")
+    public ResponseFrame invalidate(
+            @RequestParam(value = "accessToken") String accessToken,
+            @RequestParam(value = "clientToken") String clientToken) {
+    
         AuthenticationLogic logic = new AuthenticationLogic(authTemplate);
 
-        ResponseInvalidate response = logic.processLogin(null);
+        ResponseFrame response = logic.processInvalidate(accessToken, clientToken);
 
         return response;
     }
-    */
 }
