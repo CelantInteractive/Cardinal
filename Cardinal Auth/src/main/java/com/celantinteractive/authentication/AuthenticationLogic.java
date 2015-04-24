@@ -30,7 +30,7 @@ public class AuthenticationLogic {
             String userAccessToken = UUID.randomUUID().toString();
             String userClientToken = UUID.randomUUID().toString();
 
-            if (!clientToken.isEmpty()) {
+            if (!clientToken.equals("")) {
                 if (clientToken.matches("[a-z\\d]{8}-[a-z\\d]{4}-[a-z\\d]{4}-[a-z\\d]{4}-[a-z\\d]{12}")) {
                     userClientToken = clientToken;
                 }
