@@ -36,7 +36,8 @@ GRANT EXECUTE ON `cardinal`.* TO 'cardinalexecutor';
 -- Create tables
 -- ---------------------------
 CREATE TABLE `accounts` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Id` int(10) NOT NULL AUTO_INCREMENT,
+  `CardinalId` varchar(20) NOT NULL,
   `Email` varchar(100) NOT NULL,
   `DisplayName` varchar(45) NOT NULL,
   `Password` varchar(60) NOT NULL,
@@ -63,11 +64,16 @@ BEGIN
 	SELECT `Password` FROM `cardinal`.`accounts` WHERE `Email`=p_email;
 END$$
 
+CREATE PROCEDURE `getCardinalIdFromEmail` (IN p_email VARCHAR(100))
+BEGIN
+	SELECT `CardinalId` FROM `cardinal`.`accounts` WHERE `Email`=p_email;
+END$$
+
 CREATE PROCEDURE `createSession`(IN p_email VARCHAR(100), IN p_client_token VARCHAR(36), IN p_access_token VARCHAR(36))
 BEGIN
 	DECLARE p_userId int;
     
-    SELECT id INTO p_userId FROM accounts WHERE email=p_email;
+    SELECT `Id` INTO p_userId FROM `accounts` WHERE `email`=p_email;
 
 	DELETE FROM accountsessions WHERE UserId=p_userId;
     INSERT INTO accountsessions (UserId, ClientToken, AccessToken) VALUES (p_userId, p_client_token, p_access_token);

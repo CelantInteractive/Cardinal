@@ -61,9 +61,18 @@ public interface ICardinalAuthDAO {
     public void invalidateSessionByEmail(String email);
 
     /**
-     * Invalidates all sessions by valid access/client token pair
+     * Retrieves
      *
      * @param email The email address of the user to sign out
+     * @return The user's unique CardinalId
+     */
+    public String getCardinalIdFromEmail(String email);
+
+    /**
+     * Invalidates all sessions by valid access/client token pair
+     *
+     * @param accessToken Valid accessToken of the user
+     * @param clientToken The clientToken used to obtain the accessToken
      */
     public void invalidateSessionByPair(String accessToken, String clientToken);
 

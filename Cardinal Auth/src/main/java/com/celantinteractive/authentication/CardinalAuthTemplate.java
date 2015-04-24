@@ -95,7 +95,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
             stmt.setString(2, oldAccessToken);
             stmt.setString(3, clientToken);
 
-            stmt.executeQuery();            
+            stmt.executeQuery();
         } catch (Exception ex) {
             logError(ex, System.currentTimeMillis());
         } finally {
@@ -144,7 +144,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
 
         return ret;
     }
-    
+
     @Override
     public Boolean sessionIsRecent(String accessToken) {
 
@@ -155,7 +155,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
 
             conn = (Connection) dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement("call sessionIsRecent(?)");
-            
+
             stmt.setString(2, accessToken);
 
             ResultSet results = stmt.executeQuery();
@@ -214,12 +214,12 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
 
         return ret;
     }
-    
+
     @Override
     public void invalidateSessionByEmail(String email) {
 
         Connection conn = null;
-        
+
         try {
 
             conn = (Connection) dataSource.getConnection();
@@ -240,7 +240,7 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
             }
         }
     }
-    
+
     @Override
     public void invalidateSessionByPair(String accessToken, String clientToken) {
 
@@ -266,6 +266,39 @@ public class CardinalAuthTemplate implements ICardinalAuthDAO {
                 }
             }
         }
+    }
+
+    @Override
+    public String getCardinalIdFromEmail(String email) {
+
+        Connection conn = null;
+        String ret = "";
+
+        try {
+
+            conn = (Connection) dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("call getCardinalIdFromEmail(?)");
+
+            stmt.setString(1, email);
+
+            ResultSet results = stmt.executeQuery();
+
+            if (results.first()) {
+                ret = results.getString(1);
+            }
+        } catch (Exception ex) {
+            logError(ex, System.currentTimeMillis());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception ex) {
+                    logError(ex, System.currentTimeMillis());
+                }
+            }
+        }
+
+        return ret;
     }
 
     @Override

@@ -4,7 +4,6 @@
 package main.java.com.celantinteractive.authentication;
 
 import main.java.com.celantinteractive.response.ResponseLogin;
-import main.java.com.celantinteractive.response.RefreshRequest;
 import main.java.com.celantinteractive.response.ResponseRefresh;
 import java.util.UUID;
 import main.java.com.celantinteractive.common.ResponseFrame;
@@ -27,7 +26,7 @@ public class AuthenticationLogic {
 
         String userPassword = authTemplate.getPasswordFromEmail(email);
 
-        if (userPassword != null) {
+        if (userPassword != null && !userPassword.isEmpty()) {
             String userAccessToken = UUID.randomUUID().toString();
             String userClientToken = UUID.randomUUID().toString();
 
@@ -38,10 +37,16 @@ public class AuthenticationLogic {
             }
 
             if (BCrypt.checkpw(password, userPassword)) {
-                authTemplate.createSession(email, userAccessToken, userClientToken);
-                response.setStatusCode(StatusCode.OK);
-                response.setAccessToken(userAccessToken);
-                response.setClientToken(userClientToken);
+                String cardinalId = authTemplate.getCardinalIdFromEmail(email);
+                if (!cardinalId.isEmpty()) {
+                    authTemplate.createSession(email, userAccessToken, userClientToken);
+                    response.setStatusCode(StatusCode.OK);
+                    response.setCardinalId(cardinalId);
+                    response.setAccessToken(userAccessToken);
+                    response.setClientToken(userClientToken);
+                } else {
+                    response.setStatusCode(StatusCode.GENERAL_FAILURE);
+                }
             } else {
                 response.setStatusCode(StatusCode.INVALID_CREDENTIALS);
             }
