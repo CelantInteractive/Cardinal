@@ -1,4 +1,4 @@
-package main.java.com.celantinteractive.response;
+package main.java.com.celantinteractive.authentication;
 
 import java.io.Serializable;
 import main.java.com.celantinteractive.common.ResponseFrame;

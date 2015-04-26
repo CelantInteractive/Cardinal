@@ -12,7 +12,7 @@ package main.java.com.celantinteractive.common;
 public class APIEndpoints {
     
     public static class Categories {
-        public static final String AUTHENTICATION = "";
+        public static final String UPDATES = "/updates";
     }
     
     public static final String LOGIN = "/login";
@@ -20,4 +20,7 @@ public class APIEndpoints {
     public static final String VALIDATE = "/validate";
     public static final String LOGOUT = "/logout";
     public static final String INVALIDATE = "/invalidate";
+    
+    public static final String GET_LATEST_VERSION = "/getLatestVersion";
+    public static final String GET_INSTALLER = "/getInstaller";
 }

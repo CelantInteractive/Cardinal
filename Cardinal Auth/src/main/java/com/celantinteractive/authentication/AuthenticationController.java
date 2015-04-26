@@ -3,10 +3,8 @@
  */
 package main.java.com.celantinteractive.authentication;
 
-import main.java.com.celantinteractive.response.ResponseRefresh;
 import main.java.com.celantinteractive.common.ResponseFrame;
 import main.java.com.celantinteractive.common.APIEndpoints;
-import main.java.com.celantinteractive.response.ResponseLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

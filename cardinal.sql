@@ -79,14 +79,14 @@ BEGIN
     INSERT INTO accountsessions (UserId, ClientToken, AccessToken) VALUES (p_userId, p_client_token, p_access_token);
 END$$
 
-CREATE PROCEDURE `authenticateSession` (IN p_client_token VARCHAR(36), IN p_access_token VARCHAR(36))
+CREATE PROCEDURE `authenticateSession` (IN `p_client_token` VARCHAR(36), IN p_access_token VARCHAR(36))
 BEGIN
 	DECLARE recent BOOLEAN DEFAULT 0;
 	SELECT COUNT(*) INTO recent FROM accountsessions WHERE ClientToken=p_client_token AND AccessToken=p_access_token;
     SELECT recent;
 END$$
 
-CREATE PROCEDURE `sessionIsRecent` (IN p_access_token VARCHAR(36))
+CREATE PROCEDURE `sessionIsRecent` (IN `p_access_token` VARCHAR(36))
 BEGIN
 	DECLARE recent BOOLEAN DEFAULT 0;
 	SELECT COUNT(*) INTO recent FROM accountsessions WHERE AccessToken=p_access_token;
@@ -98,7 +98,7 @@ BEGIN
 	UPDATE accountsessions SET AccessToken=p_new_access_token WHERE AccessToken=p_access_token AND ClientToken=p_client_token;
 END$$
 
-CREATE PROCEDURE `isValidClientToken` (IN p_client_token VARCHAR(36))
+CREATE PROCEDURE `isValidClientToken` (IN `p_client_token` VARCHAR(36))
 BEGIN
 	DECLARE isValid BOOLEAN DEFAULT 0;
 	SELECT COUNT(*) INTO isValid FROM accountsessions WHERE ClientToken=p_client_token;

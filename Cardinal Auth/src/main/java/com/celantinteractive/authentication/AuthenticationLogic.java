@@ -3,8 +3,6 @@
  */
 package main.java.com.celantinteractive.authentication;
 
-import main.java.com.celantinteractive.response.ResponseLogin;
-import main.java.com.celantinteractive.response.ResponseRefresh;
 import java.util.UUID;
 import main.java.com.celantinteractive.common.ResponseFrame;
 import main.java.com.celantinteractive.common.ResponseFrame.StatusCode;

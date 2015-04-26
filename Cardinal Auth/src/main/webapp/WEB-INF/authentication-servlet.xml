@@ -41,5 +41,16 @@
     <beans:bean id="jsonMessageConverter"
                     class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
     </beans:bean>
-    <context:component-scan base-package="main.java.com.celantinteractive.authentication" />
+    
+    <beans:bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <beans:property name="staticMethod" value="java.lang.System.setProperty"/>
+        <beans:property name="arguments">
+            <beans:list>
+                <beans:value>resourcesFolder</beans:value>
+                <beans:value>c:/data/cardinal</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+    
+    <context:component-scan base-package="main.java.com.celantinteractive" />
 </beans:beans>
